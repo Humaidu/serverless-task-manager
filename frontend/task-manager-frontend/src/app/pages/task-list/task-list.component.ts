@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
 import { TaskService } from 'src/app/services/task.service';
 
 @Component({
@@ -9,7 +10,7 @@ import { TaskService } from 'src/app/services/task.service';
 export class TaskListComponent implements OnInit{
   tasks: any[] = []
 
-  constructor(private taskService: TaskService){}
+  constructor(private taskService: TaskService, private toastr: ToastrService){}
   
   async ngOnInit(): Promise<void> {
     try {
@@ -21,10 +22,17 @@ export class TaskListComponent implements OnInit{
     }
   }
 
-  markCompleted(taskId: string){
-    this.taskService.updateTaskStatus(taskId, 'completed')
-      .then(() => alert('Task Updated'))
-      .catch(err => console.error(err));
+  async markAsCompleted(taskId: string) {
+    try {
+      await this.taskService.updateTaskStatus(taskId, 'completed');
+      this.toastr.success('Task marked as completed');
+      const allTasksResponse = await this.taskService.getAllTasks();
+      this.tasks = allTasksResponse.data.tasks;
+    } catch (error) {
+      console.error('Error updating task status:', error);
+      this.toastr.error('Failed to update task status');
+    }
   }
+  
 
 }

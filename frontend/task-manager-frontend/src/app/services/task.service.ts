@@ -18,16 +18,18 @@ export class TaskService {
     });
   }
 
-  updateTaskStatus(taskId: string, status: string) {
-    return axios.put(`${this.API_URL}/update-status/${taskId}`, { status }, {
-      headers: { 'Content-Type': 'application/json' }
+  updateTaskStatus(task_id: string, status: string) {
+    return axios.post(`${this.API_URL}/update-status`, {
+      task_id,
+      status
     });
   }
   
-  assignTask(task_id: string, email: string): Promise<any> {
-    return axios.post(`${this.API_URL}/tasks/assign`, {
+  
+  assignTask(task_id: string, assigned_to: string): Promise<any> {
+    return axios.post(`${this.API_URL}/assign`, {
       task_id,
-      email,
+      assigned_to,
     });
   }
   // assignTask(data: { task_id: string; email: string }): Promise<any> {

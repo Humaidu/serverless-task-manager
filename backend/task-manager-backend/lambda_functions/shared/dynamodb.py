@@ -14,12 +14,12 @@ def assign_task(task_id, assigned_to):
         ExpressionAttributeValues={':a': assigned_to}
     )
 
-def update_task_status(task_id, status):
+def update_task_status(task_id, new_status):
     table.update_item(
         Key={'task_id': task_id},
         UpdateExpression="set #s=:s",
         ExpressionAttributeNames={'#s': 'status'},
-        ExpressionAttributeValues={':s': status}
+        ExpressionAttributeValues={':s': new_status}
     )
 
 def get_tasks_by_user(assigned_to):

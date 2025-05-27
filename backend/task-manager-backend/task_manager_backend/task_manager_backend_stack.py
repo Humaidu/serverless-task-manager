@@ -58,7 +58,7 @@ class TaskManagerBackendStack(Stack):
             default_cors_preflight_options=apigw.CorsOptions(
             allow_origins=["*"],
             allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-            allow_headers=["Content-Type", "X-Amz-Date", "Authorization", "X-Api-Key"],
+            allow_headers=["Content-Type", "Authorization"],
             allow_credentials=False
             )
         )

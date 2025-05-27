@@ -14,6 +14,11 @@ def lambda_handler(event, context):
         if not task_id or not assigned_to:
             return {
                 "statusCode": 400,
+                 "headers": {
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Headers": "Content-Type,Authorization",
+                    "Access-Control-Allow-Methods": "POST,OPTIONS"
+                },
                 "body": json.dumps({"message": "Missing task_id or assigned_to"})
             }
 
@@ -23,11 +28,19 @@ def lambda_handler(event, context):
             "statusCode": 200,
             "headers": {
                 "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key",
-                "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS"
+                "Access-Control-Allow-Headers": "Content-Type,Authorization",
+                "Access-Control-Allow-Methods": "POST,OPTIONS"
             },
-            "body": json.dumps({"message": "Task assigned"})
+            "body": json.dumps({"message": "Task assigned Successfully"})
         }
 
     except Exception as e:
-        return {"statusCode": 500, "body": json.dumps({"message": str(e)})}
+        return {
+            "statusCode": 500, 
+            "headers": {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Headers": "Content-Type,Authorization",
+                "Access-Control-Allow-Methods": "POST,OPTIONS"
+            },
+            "body": json.dumps({"message": str(e)})
+        }
