@@ -9,13 +9,15 @@ import { AppComponent } from './app.component';
 import { TaskListComponent } from './pages/task-list/task-list.component';
 import { CreateTaskComponent } from './pages/create-task/create-task.component';
 import { UpdateTaskComponent } from './pages/update-task/update-task.component';
+import { AssignTaskComponent } from './pages/assign-task/assign-task.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     TaskListComponent,
     CreateTaskComponent,
-    UpdateTaskComponent
+    UpdateTaskComponent,
+    AssignTaskComponent
   ],
   imports: [
     BrowserModule,

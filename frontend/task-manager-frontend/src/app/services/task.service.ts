@@ -23,4 +23,24 @@ export class TaskService {
       headers: { 'Content-Type': 'application/json' }
     });
   }
+  
+  assignTask(task_id: string, email: string): Promise<any> {
+    return axios.post(`${this.API_URL}/tasks/assign`, {
+      task_id,
+      email,
+    });
+  }
+  // assignTask(data: { task_id: string; email: string }): Promise<any> {
+  //   return fetch(`${this.API_URL}/tasks/assign`, {
+  //     method: 'POST',
+  //     headers: { 'Content-Type': 'application/json' },
+  //     body: JSON.stringify(data)
+  //   }).then(res => res.json());
+  // }
+
+  // // assignTask(task_id: string, email: string): Promise<any> {
+  // //   return this.http.post(`${this.API_URL}/tasks/assign`, { task_id, email }).toPromise();
+  // // }
+  
+  
 }

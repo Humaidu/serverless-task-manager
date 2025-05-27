@@ -1,0 +1,54 @@
+<!-- <div class="container mt-4">
+  <h2>Assign Task</h2>
+  <form (ngSubmit)="assignTask()" class="row g-3">
+    <div class="col-md-6">
+      <label for="taskSelect" class="form-label">Select Task</label>
+      <select
+        [(ngModel)]="task.task_id"
+        name="task_id"
+        id="taskSelect"
+        class="form-select"
+        required
+      >
+        <option *ngFor="let t of tasks" [value]="t.task_id">
+          {{ t.title }}
+        </option>
+      </select>
+    </div>
+
+    <div class="col-md-6">
+      <label for="assignTo" class="form-label">Assign To (Email)</label>
+      <input
+        [(ngModel)]="task.assigned_to"
+        name="assigned_to"
+        id="assignTo"
+        class="form-control"
+        required
+      />
+    </div>
+
+    <div class="col-12">
+      <button class="btn btn-primary" type="submit">Assign Task</button>
+    </div>
+  </form>
+</div> -->
+
+
+<h2>Assign Task</h2>
+
+<div class="mb-3">
+  <label for="taskSelect" class="form-label">Select Task</label>
+  <select id="taskSelect" class="form-select" [(ngModel)]="selectedTaskId" name="selectedTaskId">
+    <option value="" disabled>Select a task</option>
+    <option *ngFor="let task of tasks" [value]="task.task_id">
+      {{ task.title }} - {{ task.status }}
+    </option>
+  </select>
+</div>
+
+<div class="mb-3">
+  <label for="emailInput" class="form-label">Assignee Email</label>
+  <input id="emailInput" type="email" class="form-control" [(ngModel)]="assigneeEmail" name="assigneeEmail" placeholder="Enter email" />
+</div>
+
+<button class="btn btn-primary" (click)="assignTask()">Assign Task</button>
