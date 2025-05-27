@@ -22,12 +22,26 @@ export class TaskListComponent implements OnInit{
     }
   }
 
-  async markAsCompleted(taskId: string) {
+  // async markAsCompleted(taskId: string) {
+  //   try {
+  //     await this.taskService.updateTaskStatus(taskId, 'completed');
+  //     this.toastr.success('Task marked as completed');
+  //     const allTasksResponse = await this.taskService.getAllTasks();
+  //     this.tasks = allTasksResponse.data.tasks;
+  //   } catch (error) {
+  //     console.error('Error updating task status:', error);
+  //     this.toastr.error('Failed to update task status');
+  //   }
+  // }
+  
+  async toggleTaskStatus(task: any) {
+    const newStatus = task.status === 'pending' ? 'completed' : 'pending';
+  
     try {
-      await this.taskService.updateTaskStatus(taskId, 'completed');
-      this.toastr.success('Task marked as completed');
-      const allTasksResponse = await this.taskService.getAllTasks();
-      this.tasks = allTasksResponse.data.tasks;
+      await this.taskService.updateTaskStatus(task.task_id, newStatus);
+      this.toastr.success(`Task marked as ${newStatus}`);
+      const response = await this.taskService.getAllTasks();
+      this.tasks = response.data['tasks'];
     } catch (error) {
       console.error('Error updating task status:', error);
       this.toastr.error('Failed to update task status');
