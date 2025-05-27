@@ -1,31 +1,25 @@
 import { Injectable } from '@angular/core';
+import { environment } from 'src/environments/environment';
 import axios from 'axios';
-
-const API_URL = 'https://p8ej9c9pi1.execute-api.eu-west-1.amazonaws.com/prod/tasks';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TaskService {
-
-  // getTasks() {
-  //   return axios.get(`${API_URL}/all`, {
-  //     headers: { /* Add Authorization later if needed */ }
-  //   });
-  // }
+  private API_URL = environment.API_BASE_URL
 
   async getAllTasks(): Promise<any> {
-    return axios.get(`${API_URL}/all`);
+    return axios.get(`${this.API_URL}/all`);
   }
 
   createTask(task: any) {
-    return axios.post(API_URL, task, {
+    return axios.post(this.API_URL, task, {
       headers: { 'Content-Type': 'application/json' }
     });
   }
 
   updateTaskStatus(taskId: string, status: string) {
-    return axios.put(`${API_URL}/${taskId}`, { status }, {
+    return axios.put(`${this.API_URL}/update-status/${taskId}`, { status }, {
       headers: { 'Content-Type': 'application/json' }
     });
   }
