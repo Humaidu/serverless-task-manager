@@ -1,12 +1,15 @@
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import axios from 'axios';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TaskService {
   private API_URL = environment.API_BASE_URL
+
+  constructor(private auth: AuthService) {}
 
   async getAllTasks(): Promise<any> {
     return axios.get(`${this.API_URL}/all`);
@@ -33,10 +36,20 @@ export class TaskService {
     });
   }
   
+  // async getUserTasks(email: string): Promise<any>{
+  //   return await axios.get(`${this.API_URL}/user`, {
+  //     params: { assigned_to: email }
+  //   });
+  // }
+
   async getUserTasks(email: string): Promise<any>{
-    return await axios.get(`${this.API_URL}/user`, {
-      params: { assigned_to: email }
+    const token = this.auth.getToken();
+    const res = await axios.get(`${this.API_URL}/user?assigned_to=${email}`, {
+      headers: {
+        Authorization: token,
+      },
     });
+    return res.data
   }
   
   async updateTask(taskId: string, taskData: any) {
@@ -47,11 +60,6 @@ export class TaskService {
       headers: { 'Content-Type': 'application/json' }
     });
   }
-
-  // async updateTask2(taskId: string, data: any) {
-  //   return axios.post(`${this.API_URL}/update`, data);
-  // }
-  
 
   async deleteTask(taskId: string) {
     return axios.delete(`${this.API_URL}/delete`, {

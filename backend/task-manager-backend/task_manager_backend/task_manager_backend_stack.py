@@ -15,6 +15,53 @@ class TaskManagerBackendStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs):
         super().__init__(scope, construct_id, **kwargs)
 
+         # Cognito User Pool
+        user_pool = cognito.UserPool(
+            self, "TaskUserPool",
+            user_pool_name="TaskUserPool",
+            self_sign_up_enabled=True,
+            sign_in_aliases=cognito.SignInAliases(email=True),
+            auto_verify=cognito.AutoVerifiedAttrs(email=True),
+            password_policy=cognito.PasswordPolicy(
+                min_length=8,
+                require_lowercase=True,
+                require_uppercase=True,
+                require_digits=True,
+                require_symbols=False,
+            ),
+            account_recovery=cognito.AccountRecovery.EMAIL_ONLY,
+        )
+        
+        # App Client (Frontend or API calls)
+        app_client = user_pool.add_client(
+            "TaskAppClient",
+            auth_flows=cognito.AuthFlow(user_password=True),
+            prevent_user_existence_errors=True
+        )
+
+        # Admin Group
+        cognito.CfnUserPoolGroup(self, "AdminGroup",
+            group_name="Admin",
+            user_pool_id=user_pool.user_pool_id
+        )
+
+        # User Group
+        cognito.CfnUserPoolGroup(self, "UserGroup",
+            group_name="User",
+            user_pool_id=user_pool.user_pool_id
+        )
+        
+        # Expose values
+        self.user_pool = user_pool
+        self.app_client = app_client
+        
+        cognito_authorizer = apigw.CognitoUserPoolsAuthorizer(self,     "TaskCognitoAuthorizer", cognito_user_pools=[self.user_pool]
+        )
+
+        CfnOutput(self, "UserPoolId", value=user_pool.user_pool_id)
+        CfnOutput(self, "AppClientId", value=app_client.user_pool_client_id)
+        CfnOutput(self, "UserPoolRegion", value=self.region)
+
         # DynamoDB table
         tasks_table = ddb.Table(
             self, "TasksTable",
@@ -69,80 +116,67 @@ class TaskManagerBackendStack(Stack):
         tasks = api.root.add_resource("tasks")
         
          # /tasks POST
-        tasks.add_method("POST", apigw.LambdaIntegration(lambda_functions["create_task"]))
+        tasks.add_method(
+            "POST",
+            apigw.LambdaIntegration(lambda_functions["create_task"]),
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=cognito_authorizer 
+        )
 
         # /tasks/all GET
         all_tasks = tasks.add_resource("all")
         all_tasks.add_method(
             "GET", 
-            apigw.LambdaIntegration(lambda_functions["get_all_tasks"])     
+            apigw.LambdaIntegration(lambda_functions["get_all_tasks"]),   
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=cognito_authorizer 
         )
 
         # /tasks/assign POST
         assign = tasks.add_resource("assign")
-        assign.add_method("POST", apigw.LambdaIntegration(lambda_functions["assign_task"]))
+        assign.add_method(
+            "POST", 
+            apigw.LambdaIntegration(lambda_functions["assign_task"]),
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=cognito_authorizer 
+        )
 
         # /tasks/update-status POST
         update = tasks.add_resource("update-status")
         update.add_method(
             "POST",
             apigw.LambdaIntegration(lambda_functions["update_task_status"]),
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=cognito_authorizer 
         )
 
         # /tasks/user GET
         user = tasks.add_resource("user")
-        user.add_method("GET", apigw.LambdaIntegration(lambda_functions["get_user_tasks"]))
+        user.add_method(
+            "GET", 
+            apigw.LambdaIntegration(lambda_functions["get_user_tasks"]),
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=cognito_authorizer 
+        )
         
         # /tasks/update POST
         update = update = tasks.add_resource("update")
-        update.add_method("POST", apigw.LambdaIntegration(lambda_functions["update_task"]))
+        update.add_method(
+            "POST",
+            apigw.LambdaIntegration(lambda_functions["update_task"]),
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=cognito_authorizer 
+        )
         
         # /tasks/delete DELETE
         delete = tasks.add_resource("delete")
-        delete.add_method("DELETE", apigw.LambdaIntegration(lambda_functions["delete_task"]))
+        delete.add_method(
+            "DELETE",
+            apigw.LambdaIntegration(lambda_functions["delete_task"]),
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=cognito_authorizer 
+        )
 
-        # # Add the Cognito Authorizer
-        # cognito_authorizer = apigw.CognitoUserPoolsAuthorizer(self, "TaskApiAuthorizer",cognito_user_pools=[user_pool])
-        
-        # # Attach Authorizer to API Resource Methods
-        # tasks = rest_api.root.add_resource("tasks")
-
-        # tasks.add_method(
-        #     "POST",
-        #     apigw.LambdaIntegration(create_task_fn),
-        #     authorization_type=apigw.AuthorizationType.COGNITO,
-        #     authorizer=cognito_authorizer
-        # )
-
-        # # Cognito User Pool
-        # user_pool = cognito.UserPool(
-        #     self, "TaskUserPool",
-        #     user_pool_name="TaskUserPool",
-        #     self_sign_up_enabled=True,
-        #     sign_in_aliases=cognito.SignInAliases(email=True),
-        #     auto_verify=cognito.AutoVerifiedAttrs(email=True),
-        #     password_policy=cognito.PasswordPolicy(
-        #         min_length=8,
-        #         require_lowercase=True,
-        #         require_uppercase=True,
-        #         require_digits=True,
-        #         require_symbols=False,
-        #     ),
-        #     account_recovery=cognito.AccountRecovery.EMAIL_ONLY,
-        # )
-
-        # # App Client (Frontend or API calls)
-        # user_pool_client = user_pool.add_client(
-        #     "TaskUserPoolClient",
-        #     auth_flows=cognito.AuthFlow(
-        #         admin_user_password=True,
-        #         user_password=True,
-        #         user_srp=True,
-        #     ),
-        #     generate_secret=False
-        # )
-
-        # # Output the pool and client IDs
-        # CfnOutput(self, "UserPoolId", value=user_pool.user_pool_id)
-        # CfnOutput(self, "UserPoolClientId", value=user_pool_client.user_pool_client_id)
+    
+      
       

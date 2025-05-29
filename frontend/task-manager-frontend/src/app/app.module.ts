@@ -11,6 +11,8 @@ import { CreateTaskComponent } from './pages/create-task/create-task.component';
 import { UpdateTaskComponent } from './pages/update-task/update-task.component';
 import { AssignTaskComponent } from './pages/assign-task/assign-task.component';
 import { UserTaskComponent } from './pages/user-task/user-task.component';
+import { LoginComponent } from './pages/login/login.component';
+import { AuthService } from './services/auth.service';
 
 @NgModule({
   declarations: [
@@ -19,7 +21,8 @@ import { UserTaskComponent } from './pages/user-task/user-task.component';
     CreateTaskComponent,
     UpdateTaskComponent,
     AssignTaskComponent,
-    UserTaskComponent
+    UserTaskComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,
@@ -28,7 +31,7 @@ import { UserTaskComponent } from './pages/user-task/user-task.component';
     BrowserAnimationsModule,
     ToastrModule.forRoot()
   ],
-  providers: [],
+  providers: [AuthService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

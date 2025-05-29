@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
+import { AuthService } from 'src/app/services/auth.service';
 import { TaskService } from 'src/app/services/task.service';
 
 @Component({
@@ -8,19 +9,32 @@ import { TaskService } from 'src/app/services/task.service';
   styleUrls: ['./user-task.component.css']
 })
 export class UserTaskComponent {
-  userEmail: string = 'h@gmail.com'; // eventually from Cognito
+  email: string | null = null;
   tasks: any[] = [];
 
-  constructor(private taskService: TaskService, private toastr: ToastrService){}
+  constructor(
+    private taskService: TaskService, 
+    private toastr: ToastrService,
+     private auth: AuthService
+  ){}
 
   async ngOnInit(): Promise<void> {
+    this.email = this.auth.getUserEmail();
     try {
-      const response = await this.taskService.getUserTasks(this.userEmail);
-      this.tasks = response.data['tasks'];
-      console.log(this.tasks)
+      if (this.email){
+        const response = await this.taskService.getUserTasks(this.email);
+        this.tasks = response.data['tasks'];
+        console.log(this.tasks)
+      }
+      else{
+        this.toastr.error("Unable to determine logged-in use")
+      }
     } catch (error) {
       console.error('Failed to load tasks for user', error);
       this.toastr.error('Failed to load tasks for user, ${error}')
     }
   }
+
+
+  
 }
