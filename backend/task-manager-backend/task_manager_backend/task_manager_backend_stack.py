@@ -34,7 +34,9 @@ class TaskManagerBackendStack(Stack):
             "assign_task",
             "update_task_status",
             "get_user_tasks",
-            "get_all_tasks"
+            "get_all_tasks",
+            "update_task",
+            "delete_task"
         ]
 
         lambda_functions = {}
@@ -87,10 +89,18 @@ class TaskManagerBackendStack(Stack):
             apigw.LambdaIntegration(lambda_functions["update_task_status"]),
         )
 
-        # /tasks/user POST
+        # /tasks/user GET
         user = tasks.add_resource("user")
-        user.add_method("POST", apigw.LambdaIntegration(lambda_functions["get_user_tasks"]))
+        user.add_method("GET", apigw.LambdaIntegration(lambda_functions["get_user_tasks"]))
         
+        # /tasks/update POST
+        update = update = tasks.add_resource("update")
+        update.add_method("POST", apigw.LambdaIntegration(lambda_functions["update_task"]))
+        
+        # /tasks/delete DELETE
+        delete = tasks.add_resource("delete")
+        delete.add_method("DELETE", apigw.LambdaIntegration(lambda_functions["delete_task"]))
+
         # # Add the Cognito Authorizer
         # cognito_authorizer = apigw.CognitoUserPoolsAuthorizer(self, "TaskApiAuthorizer",cognito_user_pools=[user_pool])
         

@@ -32,17 +32,32 @@ export class TaskService {
       assigned_to,
     });
   }
-  // assignTask(data: { task_id: string; email: string }): Promise<any> {
-  //   return fetch(`${this.API_URL}/tasks/assign`, {
-  //     method: 'POST',
-  //     headers: { 'Content-Type': 'application/json' },
-  //     body: JSON.stringify(data)
-  //   }).then(res => res.json());
-  // }
+  
+  async getUserTasks(email: string): Promise<any>{
+    return await axios.get(`${this.API_URL}/user`, {
+      params: { assigned_to: email }
+    });
+  }
+  
+  async updateTask(taskId: string, taskData: any) {
+    return axios.post(`${this.API_URL}/update`, {
+      task_id: taskId,
+      ...taskData
+    }, {
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
 
-  // // assignTask(task_id: string, email: string): Promise<any> {
-  // //   return this.http.post(`${this.API_URL}/tasks/assign`, { task_id, email }).toPromise();
-  // // }
+  // async updateTask2(taskId: string, data: any) {
+  //   return axios.post(`${this.API_URL}/update`, data);
+  // }
+  
+
+  async deleteTask(taskId: string) {
+    return axios.delete(`${this.API_URL}/delete`, {
+      params: { task_id: taskId }
+    });
+  }
   
   
 }

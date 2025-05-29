@@ -31,3 +31,37 @@ def get_tasks_by_user(assigned_to):
 def get_all_tasks():
     response = table.scan()
     return response.get('Items', [])
+
+
+def get_task(task_id):
+    response = table.get_item(Key={'task_id': task_id})
+    return response.get('Item')
+
+def update_task_in_db(task_id, updates):
+    update_expression_parts = []
+    expression_values = {}
+    expression_names = {}
+
+    for k, v in updates.items():
+        placeholder = f"#{k}" if k == "status" else k
+        value_key = f":{k}"
+        update_expression_parts.append(f"{placeholder} = {value_key}")
+        expression_values[value_key] = v
+        if k == "status":
+            expression_names["#status"] = "status"
+
+    update_expression = "SET " + ", ".join(update_expression_parts)
+
+    update_kwargs = {
+        "Key": {"task_id": task_id},
+        "UpdateExpression": update_expression,
+        "ExpressionAttributeValues": expression_values,
+    }
+
+    if expression_names:
+        update_kwargs["ExpressionAttributeNames"] = expression_names
+
+    table.update_item(**update_kwargs)
+
+def delete_task_from_db(task_id):
+    table.delete_item(Key={"task_id": task_id})

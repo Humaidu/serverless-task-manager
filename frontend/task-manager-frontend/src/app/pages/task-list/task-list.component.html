@@ -1,43 +1,100 @@
 <div class="container mt-4">
-    <h2 class="text-center mb-4">Assigned Tasks</h2>
-  
-    <div *ngIf="tasks.length === 0" class="alert alert-info text-center">
-      No tasks assigned yet.
+  <h2 class="text-center mb-4">Assigned Tasks</h2>
+
+  <div *ngIf="tasks.length === 0" class="alert alert-info text-center">
+    No tasks assigned yet.
+  </div>
+
+  <div class="row row-cols-1 row-cols-md-3 g-4" *ngIf="tasks.length > 0">
+    <div class="col" *ngFor="let task of tasks">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <h5 class="card-title text-center">{{ task.title }}</h5>
+          <p class="card-text">
+            <strong>Status:</strong>
+            <span
+              class="badge m-1 p-2"
+              [ngClass]="{
+                'bg-success': task.status === 'completed',
+                'bg-warning text-dark': task.status === 'pending'
+              }"
+            >
+              {{ task.status }}
+            </span>
+          </p>
+          <p class="card-text">
+            <strong>Deadline:</strong> {{ task.deadline | date : "medium" }}
+          </p>
+          <p class="card-text">
+            <strong>Assigned To:</strong> {{ task.assigned_to }}
+          </p>
+        </div>
+        <div class="card-footer bg-transparent border-top-0 text-center">
+          <button
+            class="btn btn-sm btn-outline-primary me-2"
+            (click)="toggleTaskStatus(task)"
+            [ngClass]="{
+              'btn-outline-success': task.status === 'pending',
+              'btn-outline-warning': task.status === 'completed'
+            }"
+          >
+            {{
+              task.status === "pending"
+                ? "Mark as Completed"
+                : "Mark as Pending"
+            }}
+          </button>
+          <button
+            class="btn btn-outline-primary btn-sm me-2"
+            (click)="openUpdateModal(task)"
+          >
+            Edit
+          </button>
+          <button
+            class="btn btn-sm btn-outline-danger me-2"
+            (click)="deleteTask(task.task_id)"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
     </div>
   
-    <div class="row row-cols-1 row-cols-md-3 g-4" *ngIf="tasks.length > 0">
-      <div class="col" *ngFor="let task of tasks">
-        <div class="card shadow-sm h-100">
-          <div class="card-body">
-            <h5 class="card-title">{{ task.title }}</h5>
-            <p class="card-text">
-              <strong>Status:</strong> 
-              <span 
-                class="badge"
-                [ngClass]="{
-                  'bg-success': task.status === 'completed',
-                  'bg-warning text-dark': task.status === 'pending'
-                }"
-              >
-                {{ task.status }}
-              </span>
-            </p>
-            <p class="card-text"><strong>Deadline:</strong> {{ task.deadline | date:'medium' }}</p>
-            <p class="card-text"><strong>Assigned To:</strong> {{ task.assigned_to }}</p>
-          </div>
-          <div class="card-footer bg-transparent border-top-0 text-end">
-            <button
-              class="btn btn-sm btn-outline-primary"
-              (click)="toggleTaskStatus(task)" 
-              [ngClass]="{
-                'btn-outline-success': task.status === 'pending',
-                'btn-outline-warning': task.status === 'completed'
-              }">
-              {{ task.status === 'pending' ? 'Mark as Completed' : 'Mark as Pending' }}
-            </button>
-          </div>
+  <!-- Update Modal -->
+    <div class="modal fade" id="updateTaskModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <form (ngSubmit)="submitUpdate()">
+            <div class="modal-header">
+              <h5 class="modal-title">Update Task</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <label class="form-label">Title</label>
+                <input class="form-control" [(ngModel)]="selectedTask.title" name="title">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Description</label>
+                <textarea class="form-control" [(ngModel)]="selectedTask.description" name="description"></textarea>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Status</label>
+                <select class="form-select" [(ngModel)]="selectedTask.status" name="status">
+                  <option value="pending">Pending</option>
+                  <option value="completed">Completed</option>
+                </select>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button type="submit" class="btn btn-success">Save changes</button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
   </div>
-  
+
+
+</div>

@@ -10,6 +10,7 @@ import { TaskListComponent } from './pages/task-list/task-list.component';
 import { CreateTaskComponent } from './pages/create-task/create-task.component';
 import { UpdateTaskComponent } from './pages/update-task/update-task.component';
 import { AssignTaskComponent } from './pages/assign-task/assign-task.component';
+import { UserTaskComponent } from './pages/user-task/user-task.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import { AssignTaskComponent } from './pages/assign-task/assign-task.component';
     TaskListComponent,
     CreateTaskComponent,
     UpdateTaskComponent,
-    AssignTaskComponent
+    AssignTaskComponent,
+    UserTaskComponent
   ],
   imports: [
     BrowserModule,
