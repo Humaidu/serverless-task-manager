@@ -1,7 +1,9 @@
+import axios from 'axios';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
-import axios from 'axios';
 import { AuthService } from './auth.service';
+import axiosInstance from './axios-instance';
+
 
 @Injectable({
   providedIn: 'root'
@@ -13,83 +15,46 @@ export class TaskService {
   constructor(private auth: AuthService) {}
 
   async getAllTasks(): Promise<any> {
-    const token = localStorage.getItem('authToken'); // or 'access_token', depending on your app
-    return axios.get(`${this.API_URL}/all`, {
-      headers: {
-        Authorization: token,
-      },
-    });
+    return axiosInstance.get('/all')
   }
 
   createTask(task: any) {
-    const token = this.auth.getToken();
-    return axios.post(this.API_URL, task, {
-      headers: { 
-        'Content-Type': 'application/json' ,
-        Authorization: token,
-      }
-    });
+    return axiosInstance.post('/', task)
   }
 
   updateTaskStatus(task_id: string, status: string) {
-    const token = this.auth.getToken();
-    return axios.post(`${this.API_URL}/update-status`, {
+    return axiosInstance.post('/update-status', {
       task_id,
-      status
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: token,
-      },
+      status,
     });
   }
   
   
   assignTask(task_id: string, assigned_to: string): Promise<any> {
-    const token = this.auth.getToken();
-    return axios.post(`${this.API_URL}/assign`, {
+    return axiosInstance.post('/assign', {
       task_id,
       assigned_to,
-    },{
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: token,
-     },   
-   });
+    });
   }
 
   async getUserTasks(email: string): Promise<any>{
-    const token = this.auth.getToken();
-    const res = await axios.get(`${this.API_URL}/user?assigned_to=${email}`, {
-      headers: {
-        Authorization: token,
-      },
-    });
-    return res.data
+    return axiosInstance.get(`/user?assigned_to=${email}`);
   }
   
   async updateTask(taskId: string, taskData: any) {
-    const token = this.auth.getToken();
-    return axios.post(`${this.API_URL}/update`, {
+    return axiosInstance.post('/update', {
       task_id: taskId,
-      ...taskData
-    }, {
-      headers: {
-         'Content-Type': 'application/json',
-         Authorization: token,
-      }
+      ...taskData,
     });
   }
 
   async deleteTask(taskId: string) {
-    const token = this.auth.getToken();
-    return axios.delete(`${this.API_URL}/delete`, {
+    return axiosInstance.delete('/delete', {
       params: { task_id: taskId },
-      headers: {
-        Authorization: token,
-      },
     });
   }
   
+  }
   
-}
+  
+
