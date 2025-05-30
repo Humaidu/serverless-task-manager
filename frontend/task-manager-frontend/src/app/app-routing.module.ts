@@ -1,23 +1,43 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { TaskListComponent } from './pages/task-list/task-list.component';
-import { CreateTaskComponent } from './pages/create-task/create-task.component';
-import { AssignTaskComponent } from './pages/assign-task/assign-task.component';
-import { UserTaskComponent } from './pages/user-task/user-task.component';
-import { LoginComponent } from './pages/login/login.component';
+import { TaskListComponent } from './admin/task-list/task-list.component';
+import { CreateTaskComponent } from './admin/create-task/create-task.component';
+import { AssignTaskComponent } from './admin/assign-task/assign-task.component';
+import { UserTaskComponent } from './user/user-task/user-task.component';
+import { LoginComponent } from './auth/login/login.component';
+import { adminAuthGuard } from './guards/admin-auth.guard';
+import { userAuthGuard } from './guards/user-auth.guard';
+import { UnauthorizedComponent } from './shared/unauthorized/unauthorized.component';
 
 const routes: Routes = [
-  { path: '', component: TaskListComponent },
-  { path: 'create', component: CreateTaskComponent },
-  { path: 'create', component: CreateTaskComponent },
-  { path: 'assign', component: AssignTaskComponent },
-  { path: 'my-tasks', component: UserTaskComponent },
-  { path: 'login', component: LoginComponent },
+  {
+    path: 'admin',
+    canActivate: [adminAuthGuard],
+    children: [
+      { path: 'all-tasks', component: TaskListComponent },
+      { path: 'create', component: CreateTaskComponent },
+      { path: 'assign', component: AssignTaskComponent },
+      { path: '', redirectTo: 'all-tasks', pathMatch: 'full' },
+    ],
+  },
+  {
+    path: 'user',
+    canActivate: [userAuthGuard],
+    children: [
+      { path: 'user-tasks', component: UserTaskComponent },
+      { path: '', redirectTo: 'user-tasks', pathMatch: 'full' },
+    ],
+  },
 
+  // { path: '', component: TaskListComponent },
+  { path: 'login', component: LoginComponent },
+  { path: 'unauthorized', component: UnauthorizedComponent },
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: '**', redirectTo: 'login' }
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

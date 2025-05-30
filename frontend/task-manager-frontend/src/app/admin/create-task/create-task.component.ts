@@ -33,7 +33,7 @@ export class CreateTaskComponent {
           assigned_to: '',
           deadline: ''
         };
-        this.router.navigate(['/'])
+        this.router.navigate(['/admin'])
       })
       .catch(err => {
         console.log(err);

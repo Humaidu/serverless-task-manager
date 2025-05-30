@@ -15,15 +15,22 @@ export class LoginComponent {
   error = '';
 
   constructor(
-    private auth: AuthService, 
+    private authService: AuthService, 
     private router: Router,
     private toastr: ToastrService
   ) {}
 
   async login() {
     try {
-      await this.auth.login(this.email, this.password);
-      this.router.navigate(['/my-tasks']);
+      await this.authService.login(this.email, this.password);
+      
+      const role = this.authService.getUserRole();
+
+      if (role === 'admin') {
+        this.router.navigate(['/admin/all-tasks']);
+      } else {
+        this.router.navigate(['/user/user-tasks']);
+      }
 
     } catch (err) {
       this.error = 'Login failed. Please check your credentials.';

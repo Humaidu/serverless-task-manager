@@ -24,7 +24,6 @@ export class UserTaskComponent {
       if (this.email){
         const response = await this.taskService.getUserTasks(this.email);
         this.tasks = response.data['tasks'];
-        console.log(this.tasks)
       }
       else{
         this.toastr.error("Unable to determine logged-in use")

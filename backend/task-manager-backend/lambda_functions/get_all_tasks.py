@@ -4,6 +4,7 @@ from shared import dynamodb
 def lambda_handler(event, context):
     try:
         tasks = dynamodb.get_all_tasks()
+        print("Fetched tasks:", tasks)
         return {
             "statusCode": 200,
             "headers": {

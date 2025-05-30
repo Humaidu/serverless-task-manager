@@ -23,6 +23,8 @@ interface DecodedToken {
   providedIn: 'root', // ✅ This makes AuthService globally available
 })
 export class AuthService {
+  userRole: string | null = null;
+
   login(email: string, password: string): Promise<string> {
     const authDetails = new AuthenticationDetails({
       Username: email,
@@ -71,4 +73,28 @@ export class AuthService {
     const decoded = this.getDecodedToken();
     return decoded?.email || null;
   }
+  
+  getUserRole(): 'admin' | 'user' {
+    const decoded = this.getDecodedToken();
+    if (decoded?.['cognito:groups']?.includes('Admin')) return 'admin';
+    return 'user';
+  }
+  
+
+  isAdmin(): boolean {
+    return this.getUserRole() === 'admin';
+  }
+
+  isUser(): boolean {
+    return this.getUserRole() === 'user';
+  }
+  logout() {
+    localStorage.removeItem('authToken');
+    window.location.href = '/login';
+  }
+
+  isLoggedIn(): boolean {
+    return !!localStorage.getItem('authToken');
+  }
+  
 }

@@ -64,7 +64,7 @@ export class AssignTaskComponent {
         task_id: '',
         assigned_to: ''
       };
-      this.router.navigate(['/'])
+      this.router.navigate(['/admin'])
     } catch (error) {
       console.error('Error assigning task:', error);
       this.toastr.success('Failed to assign task.');
