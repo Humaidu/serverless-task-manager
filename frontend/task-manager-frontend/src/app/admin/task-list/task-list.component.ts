@@ -12,6 +12,7 @@ export class TaskListComponent implements OnInit{
   updateModal: Modal | undefined;
   tasks: any[] = []
   selectedTask: any = {};
+  loading: boolean = true;
 
 
   constructor(private taskService: TaskService, private toastr: ToastrService){}
@@ -21,11 +22,14 @@ export class TaskListComponent implements OnInit{
   }
 
   async loadAllTasks() {
+    this.loading = true;
     try {
       const response = await this.taskService.getAllTasks();
       this.tasks = response.data['tasks'] || [];
     } catch (error) {
       console.error('Failed to fetch tasks', error);
+    } finally {
+      this.loading = false;
     }
   }
 

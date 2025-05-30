@@ -9,10 +9,8 @@ import axiosInstance from './axios-instance';
   providedIn: 'root'
 })
 export class TaskService {
-  private API_URL = environment.API_BASE_URL
 
-
-  constructor(private auth: AuthService) {}
+  constructor() {}
 
   async getAllTasks(): Promise<any> {
     return axiosInstance.get('/all')
@@ -28,7 +26,6 @@ export class TaskService {
       status,
     });
   }
-  
   
   assignTask(task_id: string, assigned_to: string): Promise<any> {
     return axiosInstance.post('/assign', {
@@ -53,7 +50,7 @@ export class TaskService {
       params: { task_id: taskId },
     });
   }
-  
+
   }
   
   

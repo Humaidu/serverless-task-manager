@@ -32,7 +32,6 @@ def get_all_tasks():
     response = table.scan()
     return response.get('Items', [])
 
-
 def get_task(task_id):
     response = table.get_item(Key={'task_id': task_id})
     return response.get('Item')
