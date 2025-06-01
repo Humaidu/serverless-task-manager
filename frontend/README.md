@@ -1,16 +1,35 @@
 # Task Management Frontend (Angular)
 
-This is the frontend of the **Serverless Task Management System** built with **Angular**. It allows users to create tasks, view assigned tasks, and mark them as completed.
+The Serverless Task Manager is a full-stack application built with Angular for the frontend and AWS serverless technologies (API Gateway, Lambda, DynamoDB, Cognito) for the backend. This Angular frontend provides a responsive interface for task management with secure authentication.
+
+It allows an Admin to create tasks, assign tasks, and mark them as completed or pending. Users can also view assigned task.
+
+*Live App*: **http://task-manager-frontend-app-04.s3-website-eu-west-1.amazonaws.com**
 
 ---
 
 ## Features
 
-- ✅ Create new tasks with title, description, assignee, and deadline
-- 📋 View all assigned tasks in a responsive Bootstrap grid
-- ✅ Mark tasks as completed
-- 🌐 Connects to AWS Lambda functions via API Gateway
-- 🎨 Styled with Bootstrap 5
+- **User Authentication**:
+  - Sign up, login, and logout using AWS Cognito
+  - Protected routes with auth guards
+  - JWT token management
+
+- **Task Management**:
+  - Create new tasks with title, description, assignee, and deadline
+  - View all assigned tasks in a responsive Bootstrap grid
+  - Mark tasks as completed
+  - Assign tasks
+  - Connects to AWS Lambda functions via API Gateway
+  - Styled with Bootstrap 5
+
+- **Technical Features**:
+  - Angular 15+ (check your actual version)
+  - RxJS for state management
+  - Angular Material UI components
+  - HTTP interceptors for API requests
+  - Form validation with Reactive Forms
+  - Environment-based configuration
 
 ---
 
@@ -36,6 +55,12 @@ Make sure you have the following installed:
 
 - [Node.js](https://nodejs.org/) (v16+ recommended)
 - [Angular CLI](https://angular.io/cli)
+- npm v8.x or higher (or yarn)
+- AWS backend services deployed:
+  - API Gateway
+  - Lambda functions
+  - DynamoDB tables
+  - Cognito User Pool
 
 Install Angular CLI globally if you haven't:
 
@@ -52,11 +77,21 @@ Clone the repository and install dependencies:
 
 ```
 git clone https://github.com/Humaidu/task-manager-frontend.git
-cd task-manager-frontend
+cd frontend/task-manager-frontend
 npm install
 
 ```
+---
+## Install Dependencies
 
+```
+npm install
+# or
+yarn install
+
+```
+
+---
 ## Environment Configuration
 
 Create a file called **environment.ts** in **src/environments/**:
@@ -103,3 +138,157 @@ These APIs are provided by the AWS Lambda backend (through API Gateway):
 | `/tasks/all`           | GET    | Get all tasks      |
 | `/tasks/assign`        | POST   | Assign a task      |
 | `/tasks/update-status` | POST   | Update task status |
+
+---
+
+## Roles and Access
+
+### User
+
+- Allowed Actions:
+
+    - View assigned tasks: GET /api/user/tasks
+
+### Admin
+
+- Allowed Actions:
+
+    - Create task: POST /api/admin/task
+    - Assign task: PUT /api/admin/task/:id/assign
+    - Update task: PUT /api/admin/task/:id
+    - Change task status: PUT /api/admin/task/:id/status
+    - Delete task: DELETE /api/admin/task/:id
+
+---
+
+## Login Flow
+
+- UI for login
+- Upon successful login:
+
+  - JWT is extracted from the URL
+  - Token is saved in localStorage or memory
+  - axiosInstance attaches the token to all requests
+  - User is redirected to appropriate route based on group (User or Admin)
+
+---
+
+## Axios Interceptor (axiosInstance.ts)
+
+```
+import axios from 'axios';
+
+const axiosInstance = axios.create();
+
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('id_token');
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+export default axiosInstance;
+
+```
+---
+## Frontend Deployment to AWS S3 (Static Hosting)
+
+You can deploy your Angular frontend to an Amazon S3 bucket for static website hosting. Optionally, use CloudFront for CDN and HTTPS support.
+
+---
+
+### Step 1: Build Angular App for Production
+
+```bash
+ng build --configuration production
+
+```
+This will generate the build artifacts in the dist/ folder, typically:
+
+```
+dist/task-manager-frontend/
+
+```
+
+---
+### Step 2: Create and Configure an S3 Bucket
+
+**Create an s3 bucket**
+
+Bucket name is `task-manager-frontend-app-04`
+
+```
+aws s3 mb s3://task-manager-frontend-app-04
+
+```
+
+---
+
+**Enable Static website hosting**
+
+```
+aws s3 website  s3://task-manager-frontend-app-04 --index-document index.html --error-document index.html
+
+```
+
+---
+
+**Set Bucket Policy (Public Read Access)**
+
+Create a `policy.json` file
+
+```
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "PublicReadGetObject",
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::task-manager-frontend/*"
+    }
+  ]
+}
+
+```
+
+*Then run:*
+
+```
+aws s3api put-bucket-policy --bucket s3://task-manager-frontend-app-04 --policy file://policy.json
+
+```
+
+---
+
+**Upload the Angular Build to S3**
+
+```
+aws s3 sync ./dist/task-manager-frontend/ s3://task-manager-frontend-app-04 --delete
+
+```
+
+*Make sure your AWS CLI is configured:*
+
+```
+aws configure
+
+```
+
+---
+## Access the Hosted App
+
+- http://task-manager-frontend-app-04.s3-website-eu-west-1.amazonaws.com
+
+
+
+
+
+
+
+
