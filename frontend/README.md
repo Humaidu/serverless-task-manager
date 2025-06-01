@@ -285,6 +285,88 @@ aws configure
 
 - http://task-manager-frontend-app-04.s3-website-eu-west-1.amazonaws.com
 
+---
+
+ ## 🤖 CI/CD: Deploy Frontend to S3 via GitHub Actions
+
+This GitHub Actions workflow automatically deploys your Angular frontend to an S3 bucket on every push to the `main` branch.
+
+---
+
+### 📝 Prerequisites
+
+1. **AWS credentials** (IAM user with `AmazonS3FullAccess`)
+2. Add the following GitHub Secrets to your repository:
+
+| Secret Name         | Description                     |
+|---------------------|---------------------------------|
+| `AWS_ACCESS_KEY_ID` | Your AWS Access Key ID          |
+| `AWS_SECRET_ACCESS_KEY` | Your AWS Secret Access Key  |
+| `AWS_REGION`        | Your AWS region (e.g., `eu-west-1`) |
+| `S3_BUCKET_NAME`    | Your S3 bucket name             |
+
+---
+### 🧾 `.github/workflows/deploy.yml`
+
+```yaml
+name: Task Manage Frontend Angular App to S3
+
+on:
+  push:
+    branches:
+      - main  
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'  
+
+    - name: Install dependencies
+      run: |
+        cd frontend/task-manager-frontend
+        npm install
+
+    - name: Build Angular app
+      run: |
+        cd frontend/task-manager-frontend
+        npm run build -- --configuration production
+
+    - name: Upload to S3
+      uses: jakejarvis/s3-sync-action@v0.5.1
+      with:
+        args: --delete
+      env:
+        AWS_S3_BUCKET: ${{ secrets.S3_BUCKET_NAME }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: ${{ secrets.AWS_REGION }}
+        SOURCE_DIR: frontend/task-manager-frontend/dist/task-manager-frontend
+
+```
+
+---
+
+## What It Does
+- Runs on every push to main
+- Builds the Angular app with production config
+- Syncs the build output to your S3 bucket
+- Deletes outdated files from S3
+
+---
+
+## Security Tip
+
+Always use GitHub Secrets to store AWS credentials — never hardcode them in your repo.
+
+
 
 
 
