@@ -4,6 +4,8 @@ The Serverless Task Manager is a full-stack application built with Angular for t
 
 It allows an Admin to create tasks, assign tasks, and mark them as completed or pending. Users can also view assigned task.
 
+---
+
 *Live App*: **http://task-manager-frontend-app-04.s3-website-eu-west-1.amazonaws.com**
 
 ---
@@ -30,22 +32,6 @@ It allows an Admin to create tasks, assign tasks, and mark them as completed or 
   - HTTP interceptors for API requests
   - Form validation with Reactive Forms
   - Environment-based configuration
-
----
-
-## Project Structure
-
-src/
-├── app/
-│ ├── components/
-│ │ ├── task-list/
-│ │ └── create-task/
-│ ├── services/
-│ │ └── task.service.ts
-│ ├── app-routing.module.ts
-│ ├── app.component.html
-│ └── app.module.ts
-└── index.html
 
 ---
 
