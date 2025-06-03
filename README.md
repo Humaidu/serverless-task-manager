@@ -43,9 +43,22 @@ GitHub: [https://github.com/Humaidu/serverless-task-manager](https://github.com/
 
 ---
 
-## Project Setup
+## Task Manager App UI
 
-### Clone the Repo
+### Login/Home Page
+![Home Page/Login](ui-screenshots/login_page.png)
+
+---
+### User Page
+![User Page](ui-screenshots/user_page.png)
+
+---
+### Admin Page
+![Admin Page](ui-screenshots/admin_page.png)
+
+---
+
+## Clone the Repo
 
 ```bash
 git clone https://github.com/Humaidu/serverless-task-manager.git
