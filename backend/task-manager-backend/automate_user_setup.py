@@ -35,4 +35,4 @@ client.admin_add_user_to_group(
     GroupName=GROUP_NAME
 )
 
-print(f"✅ User {USERNAME} created and added to {GROUP_NAME}.")
+print(f"User {USERNAME} created and added to {GROUP_NAME}.")

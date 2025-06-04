@@ -102,7 +102,42 @@ npm install
 | Admin | `/api/admin/task/:id`          | DELETE | Delete task              |
 
 ---
+## Admin: Add Users to Cognito
 
+The script [automate_user_setup.py](backend/task-manager-backend/automate_user_setup.py) allows an administrator to create a new user in the AWS Cognito User Pool, assign a permanent password, and add the user to a specified group (e.g., Admin, User, etc.). It is useful for provisioning users who will later sign in to the system via the frontend application.
+
+---
+### Usage
+- Make sure you have a `.env file` in the root of the project with the following variables set:
+    ```
+    USER_POOL_ID=your_cognito_user_pool_id
+    USERNAME=user@example.com
+    PASSWORD=TemporaryPassword123!
+    GROUP_NAME=User  # or Admin
+
+    ```
+
+- Run the script
+
+    ```
+    python scripts/create_user.py
+
+    ```
+
+- On success, you will see a confirmation:
+
+    ```
+    User user@example.com created and added to User.
+
+    ```
+
+## Notes
+
+- The MessageAction='SUPPRESS' prevents Cognito from sending a welcome email.
+- The password is immediately set to permanent, so the user can log in directly.
+- In future versions, we will enhance this script to force users to change their passwords on first login, improving security.
+
+---
 ## Future Enhancements
 
 - Email notifications via Amazon SES
