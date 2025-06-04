@@ -4,6 +4,11 @@ A full-stack, serverless **Task Management System** built with Angular (frontend
 
 ---
 
+## Architecture Diagram
+
+![Task Manager Architecture Diagram](ui-screenshots/taskManagerArchitecture.png)
+
+---
 ## Live App
 
 - *http://task-manager-frontend-app-04.s3-website-eu-west-1.amazonaws.com*
