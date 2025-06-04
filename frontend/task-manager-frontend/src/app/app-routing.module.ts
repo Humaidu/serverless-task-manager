@@ -8,6 +8,7 @@ import { LoginComponent } from './auth/login/login.component';
 import { adminAuthGuard } from './guards/admin-auth.guard';
 import { userAuthGuard } from './guards/user-auth.guard';
 import { UnauthorizedComponent } from './shared/unauthorized/unauthorized.component';
+import { SetNewPasswordComponent } from './auth/set-new-password/set-new-password.component';
 
 const routes: Routes = [
   {
@@ -31,6 +32,7 @@ const routes: Routes = [
 
   // { path: '', component: TaskListComponent },
   { path: 'login', component: LoginComponent },
+  { path: 'set-new-password', component: SetNewPasswordComponent },
   { path: 'unauthorized', component: UnauthorizedComponent },
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: '**', redirectTo: 'login' }

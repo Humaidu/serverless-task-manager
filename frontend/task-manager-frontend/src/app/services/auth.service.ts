@@ -28,6 +28,7 @@ interface DecodedToken {
 })
 export class AuthService {
   userRole: string | null = null;
+  private challengedUser: CognitoUser | null = null;
 
   /**
    * Logs in the user by authenticating credentials against Cognito.
@@ -60,6 +61,34 @@ export class AuthService {
         onFailure: (err) => {
           reject(err); // Handle login failure
         },
+        newPasswordRequired: (userAttributes, requiredAttributes) => {
+            this.challengedUser = cognitoUser;
+
+            // Strip out attributes not needed
+            delete userAttributes.email_verified;
+            
+            // Redirect using Angular routing (optional) or pass data back
+            //resolve with a flag and handle redirection in the component
+            resolve('NEW_PASSWORD_REQUIRED'); 
+          },
+      });
+    });
+  }
+
+  // Function to Complete New Password Challenge
+  completeNewPasswordChallenge(newPassword: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (!this.challengedUser) {
+        return reject(new Error('No user in new password challenge.'));
+      }
+  
+      this.challengedUser.completeNewPasswordChallenge(newPassword, {}, {
+        onSuccess: (result) => {
+          const idToken = result.getIdToken().getJwtToken();
+          localStorage.setItem('authToken', idToken);
+          resolve();
+        },
+        onFailure: (err) => reject(err)
       });
     });
   }

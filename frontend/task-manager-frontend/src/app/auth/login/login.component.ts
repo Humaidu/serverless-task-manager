@@ -21,21 +21,29 @@ export class LoginComponent {
   ) {}
 
   async login() {
-    try {
-      await this.authService.login(this.email, this.password);
-      
-      const role = this.authService.getUserRole();
-
-      if (role === 'admin') {
-        this.router.navigate(['/admin/all-tasks']);
+    const role = this.authService.getUserRole();
+    this.authService.login(this.email, this.password).then(async result => {
+      if (result === 'NEW_PASSWORD_REQUIRED') {
+        // Navigate to set-new-password page
+        this.router.navigate(['/set-new-password'], {
+          queryParams: {
+            username: this.email,
+            tempPassword: this.password
+          }
+        });
       } else {
-        this.router.navigate(['/user/user-tasks']);
+        // Redirect to home/dashboard
+        if (role === 'admin') {
+          this.router.navigate(['/admin/all-tasks']);
+        } else {
+          this.router.navigate(['/user/user-tasks']);
+        }
       }
-
-    } catch (err) {
+    }).catch(err => {
+      console.error('Login failed', err);
       this.error = 'Login failed. Please check your credentials.';
       this.toastr.error(this.error)
-    }
+    });
   }
 }
 

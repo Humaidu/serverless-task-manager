@@ -109,7 +109,7 @@ npm install
 ---
 ## Admin: Add Users to Cognito
 
-The script [automate_user_setup.py](backend/task-manager-backend/automate_user_setup.py) allows an administrator to create a new user in the AWS Cognito User Pool, assign a permanent password, and add the user to a specified group (e.g., Admin, User, etc.). It is useful for provisioning users who will later sign in to the system via the frontend application.
+The script [create_user.py](backend/task-manager-backend/create_user.py) allows an administrator to create a new user in the AWS Cognito User Pool, assign a temporary password, and add the user to a specified group (e.g., Admin, User, etc.). This setup enables the user to sign in via the frontend application and forces them to change their password to a permanent one on first login, improving security.
 
 ---
 ### Usage
@@ -132,15 +132,26 @@ The script [automate_user_setup.py](backend/task-manager-backend/automate_user_s
 - On success, you will see a confirmation:
 
     ```
-    User user@example.com created and added to User.
+    User user@example.com created with temporary password and added to User.
+    User user@example.com will be required to change password on first login.
 
     ```
+---
 
-## Notes
+### What happens on first login?
 
+- When the user logs in for the first time using the temporary password, AWS Cognito triggers the `NEW_PASSWORD_REQUIRED` challenge.
+- The frontend detects this challenge and redirects the user to a Set New Password form.
+- The user enters their new permanent password in this form.
+- Upon successful password update, the user can then log in normally with the new password.
+
+---
+### Notes
+
+- The script creates users with a temporary password, not a permanent one.
+- The frontend is responsible for handling the `NEW_PASSWORD_REQUIRED` challenge flow to force the password update.
+- This approach improves security by ensuring users set their own permanent passwords.
 - The MessageAction='SUPPRESS' prevents Cognito from sending a welcome email.
-- The password is immediately set to permanent, so the user can log in directly.
-- In future versions, we will enhance this script to force users to change their passwords on first login, improving security.
 
 ---
 ## Future Enhancements

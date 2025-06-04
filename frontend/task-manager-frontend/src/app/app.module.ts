@@ -16,6 +16,7 @@ import { AuthService } from './services/auth.service';
 import { DashboardComponent } from './admin/dashboard/dashboard.component';
 import { UnauthorizedComponent } from './shared/unauthorized/unauthorized.component';
 import { NavbarComponent } from './shared/navbar/navbar.component';
+import { SetNewPasswordComponent } from './auth/set-new-password/set-new-password.component';
 
 @NgModule({
   declarations: [
@@ -29,6 +30,7 @@ import { NavbarComponent } from './shared/navbar/navbar.component';
     DashboardComponent,
     UnauthorizedComponent,
     NavbarComponent,
+    SetNewPasswordComponent,
   ],
   imports: [
     BrowserModule,

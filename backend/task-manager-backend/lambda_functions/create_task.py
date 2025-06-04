@@ -23,7 +23,7 @@ def lambda_handler(event, context):
         if "body" in event:
             body = json.loads(event["body"])  # Parse JSON string to dict
         else:
-            body = event  # Use as-is for direct invocation (e.g., local test)
+            body = event["body"]  # Use as-is for direct invocation (e.g., local test)
 
         # Retrieve required fields from request body
         title = body.get("title")
